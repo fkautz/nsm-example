@@ -17,6 +17,29 @@ import (
 // If not set, running mage will list available targets
 // var Default = Build
 
+func CreateCluster() error {
+	fmt.Println("Creating cluster...")
+
+	return sh.RunV("kind", "create", "cluster")
+}
+
+func DeleteCluster() error {
+	fmt.Println("Creating cluster...")
+
+	return sh.RunV("kind", "delete", "cluster")
+}
+
+func InstallSpire() error {
+	fmt.Println("Installing spire...")
+
+	if err := os.Chdir("spire"); err != nil {
+		return err
+	}
+	defer os.Chdir("..")
+
+	return sh.RunV("/bin/sh", "-e", "test.sh")
+}
+
 // A build step that requires additional params, or platform specific steps for example
 func Build() error {
 	fmt.Println("Building...")
