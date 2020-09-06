@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: nsmgr
+  labels:
+    app: nsm
+spec:
+  selector:
+    matchLabels:
+      app: nsmgr
+  template:
+    metadata:
+      labels:
+        app: nsmgr
+    spec:
+      containers:
+      - name: nsmgr
+        image: example/cmd-nsmgr
+        ports:
+        - containerPort: 80
+        imagePullPolicy: Never
+        env:
+        - name: SPIFFE_ENDPOINT_SOCKET
+          value: unix:///run/spire/sockets/agent.sock
+        volumeMounts:
+          - name: spire-agent-socket
+            mountPath: /run/spire/sockets
+            readOnly: true
+      volumes:
+        - name: spire-agent-socket
+          hostPath:
+            path: /run/spire/sockets
+            type: Directory

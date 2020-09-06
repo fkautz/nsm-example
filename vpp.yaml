@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: vpp
+  labels:
+    app: nsm
+spec:
+  selector:
+    matchLabels:
+      app: vpp
+  template:
+    metadata:
+      labels:
+        app: vpp
+    spec:
+      containers:
+      - name: vpp
+        image: example/cmd-forwarder-vppagent
+        ports:
+        - containerPort: 80
+        imagePullPolicy: Never
+        env:
+        - name: SPIFFE_ENDPOINT_SOCKET
+          value: unix:///run/spire/sockets/agent.sock
+        securityContext:
+          privileged: true
+        volumeMounts:
+          - name: spire-agent-socket
+            mountPath: /run/spire/sockets
+            readOnly: true
+      volumes:
+        - name: spire-agent-socket
+          hostPath:
+            path: /run/spire/sockets
+            type: Directory

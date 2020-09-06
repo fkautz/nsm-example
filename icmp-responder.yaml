@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: icmp-responder
+  labels:
+    app: nsm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: icmp-responder
+  template:
+    metadata:
+      labels:
+        app: icmp-responder
+    spec:
+      containers:
+      - name: icmp-responder
+        image: example/cmd-nse-icmp-responder
+        ports:
+        - containerPort: 80
+        imagePullPolicy: Never
+        env:
+        - name: REGISTRY_MEMORY_LISTEN_ON
+          value: https://0.0.0.0:443/
+        - name: SPIFFE_ENDPOINT_SOCKET
+          value: unix:///run/spire/sockets/agent.sock
+        volumeMounts:
+          - name: spire-agent-socket
+            mountPath: /run/spire/sockets
+            readOnly: true
+      volumes:
+        - name: spire-agent-socket
+          hostPath:
+            path: /run/spire/sockets
+            type: Directory
