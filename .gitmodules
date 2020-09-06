@@ -1,0 +1,15 @@
+[submodule "cmd-forwarder-vppagent"]
+	path = cmd-forwarder-vppagent
+	url = git@github.com:networkservicemesh/cmd-forwarder-vppagent.git
+[submodule "cmd-nsc"]
+	path = cmd-nsc
+	url = git@github.com:networkservicemesh/cmd-nsc.git
+[submodule "cmd-nse-icmp-responder"]
+	path = cmd-nse-icmp-responder
+	url = git@github.com:networkservicemesh/cmd-nse-icmp-responer.git
+[submodule "cmd-nsmgr"]
+	path = cmd-nsmgr
+	url = git@github.com:networkservicemesh/cmd-nsmgr.git
+[submodule "cmd-registry-memory"]
+	path = cmd-registry-memory
+	url = git@github.com:networkservicemesh/cmd-registry-memory.git
