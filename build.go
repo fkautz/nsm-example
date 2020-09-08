@@ -20,7 +20,7 @@ import (
 func CreateCluster() error {
 	fmt.Println("Creating cluster...")
 
-	return sh.RunV("kind", "create", "cluster")
+	return sh.RunV("kind", "create", "cluster", "--wait", "120s")
 }
 
 func DeleteCluster() error {
@@ -37,7 +37,7 @@ func InstallSpire() error {
 	}
 	defer os.Chdir("..")
 
-	return sh.RunV("/bin/sh", "-e", "test.sh")
+	return sh.RunV("/bin/bash", "-e", "test.sh")
 }
 
 // A build step that requires additional params, or platform specific steps for example
@@ -94,10 +94,19 @@ func Install() error {
 func Register() error {
 	fmt.Println("Registering SPIRE identities")
 
-	argString := "exec -n spire spire-server-0 -- /opt/spire/bin/spire-server entry create -spiffeID spiffe://example.org/ns/default/sa/default -parentID spiffe://example.org/ns/spire/sa/spire-agent -selector k8s:ns:default -selector k8s:sa:default"
-	args := strings.Split(argString, " ")
+	registrations := []string{
+		"exec -n spire spire-server-0 -- /opt/spire/bin/spire-server entry create -spiffeID spiffe://example.org/ns/spire/sa/spire-agent -selector k8s_sat:cluster:demo-cluster -selector k8s_sat:agent_ns:spire -selector k8s_sat:agent_sa:spire-agent -node",
+		"exec -n spire spire-server-0 -- /opt/spire/bin/spire-server entry create -spiffeID spiffe://example.org/ns/default/sa/default -parentID spiffe://example.org/ns/spire/sa/spire-agent -selector k8s:ns:default -selector k8s:sa:default",
+	}
 
-	return sh.RunV("kubectl", args...)
+	for _, registration := range registrations {
+		args := strings.Split(registration, " ")
+		err := sh.RunV("kubectl", args...)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 // Clean up after yourself
